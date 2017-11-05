@@ -1,0 +1,151 @@
+<html>
+<head>
+<script type="text/javascript">
+
+var canvas;     //deklaracja obiektu "p³ótno" 
+var c;			//na p³ótnie wyœwietlana jest grafika
+
+  
+function line(a, b){       //odcinek o koñach a i b
+ canvas=document.getElementById("canvas");
+ if(!canvas.getContext){return;}
+ c=canvas.getContext("2d");
+c.beginPath();
+c.moveTo(a[0],a[1]);
+c.lineTo(b[0],b[1]);
+c.stroke();
+  }
+
+function tarcza(S,r) {
+  canvas=document.getElementById("canvas");
+ if(!canvas.getContext){return;}
+ c=canvas.getContext("2d");
+	 
+	// c.beginPath();
+	 c.arc(S[0], S[1], r, 0, Math.PI * 2, true);
+	 c.stroke();
+
+	var p = [150,50];
+	var q = [150,60];
+	
+	p[0] = S[0];
+	q[0] = S[0];
+	p[1] = S[1] - r;
+	q[1] = S[1] - r + 20;
+	
+	for(var i=0; i<60; i++)
+	{
+		if(i % 5 == 0)
+		{
+			line(p,q);
+		}
+		
+		p = rotate(6,S,p);
+		q = rotate(6,S,q);
+		
+	}
+	
+	p[0] = S[0];
+	q[0] = S[0];
+	p[1] = S[1] - r;
+	q[1] = S[1] - r + 10;
+	
+	
+	for( i=0; i<60; i++)
+	{
+		if(i % 5 != 0)
+		{
+			line(p,q);
+		}
+		
+		p = rotate(6,S,p);
+		q = rotate(6,S,q);
+	}
+}
+
+function wskazowka(S,r) {
+	canvas=document.getElementById("canvas");
+ if(!canvas.getContext){return;}
+ c=canvas.getContext("2d");
+ 
+	var h = 0.4 * r;
+	var m = 0.6 * r;
+	var s = 0.8 * r;
+	var ws = [0,0]
+	
+	ws[0] = S[0];
+	ws[1] = S[1] - 0.75*r;
+	ws = rotate(10,S,ws)
+	line(S,ws)
+	
+	ws[0] = S[0];
+	ws[1] = S[1] - 0.65*r;
+	ws = rotate(90,S,ws)
+	line(S,ws)
+	
+	ws[0] = S[0];
+	ws[1] = S[1] - 0.5*r;
+	ws = rotate(225,S,ws)
+	line(S,ws)
+	
+
+
+}
+
+function clear
+function rotateHours() {
+	
+}
+
+function rotateMinutes() {
+
+}
+
+function rotateSeconds() {
+
+}
+
+function degreesToRadians(angle) {  //zamiana stopni na radiany
+    return radians = (Math.PI/180)*angle;
+}
+
+var playH;  // animacja z ustaleniem przedzia³u czasowego (time interval)
+var playM;
+var playS;
+
+function startAnimation(){
+playH=setInterval('rotateHours()',100);
+playM=setInterval('rotateMinutes()',500);
+playS=setInterval('rotateSeconds()',1000);
+}
+function stopAnimation(){
+clearInterval(playH);
+clearInterval(playM);
+clearInterval(playS);
+}
+
+
+function rotate(angle,a,b){  //obrót punktu "b" wokó³ punktu "a" o k¹t "angle"
+angle=degreesToRadians(angle);
+d0=b[0]; d1=b[1];
+b[0]=(d0-a[0])*Math.cos(angle)-(d1-a[1])*Math.sin(angle) + a[0];
+b[1]=(d0-a[0])*Math.sin(angle)+(d1-a[1])*Math.cos(angle) + a[1];
+return b;
+}
+
+</script>
+</head>
+
+
+<body>
+
+<canvas id="canvas" width='600' height='400'>
+<p>Sorry: Browser does not support Graphics Canvas</p></canvas><br/>
+
+<button onclick="tarcza([150,150], 100);">Tarcza</button>
+<button onclick="wskazowka([150,150], 100);">Wskazowki</button>
+<button onclick="startAnimation();">START</button> 
+<button onclick="stopAnimation();">STOP</button>
+
+</body>
+</html>

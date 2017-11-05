@@ -1,0 +1,216 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			var canvas;
+			var c;
+			var x = 150;
+			var y = 150;
+			var r = 100;
+			var s = [x, y];
+			var play;
+			
+			function clearCanvas()
+			{		  
+				canvas = document.getElementById("canvas");
+				if(!canvas.getContext)
+				{
+					return;
+				}
+				c = canvas.getContext("2d");
+				c.clearRect(0, 0, canvas.width, canvas.height);
+			}
+			
+			function clearInt()
+			{		  
+				canvas = document.getElementById("canvas");
+				if(!canvas.getContext)
+				{
+					return;
+				}
+				c = canvas.getContext("2d");
+				clearInterval(play);
+				c.clearRect(0, 0, canvas.width, canvas.height);
+			}
+			
+			function rotate(angle, a, b) //obrót punktu "b" wokół punktu "a" o kąt "angle"
+			{  
+				angle = degreesToRadians(angle);
+				d0 = b[0]; 
+				d1 = b[1];
+				b[0] = (d0 - a[0]) * Math.cos(angle) - (d1 - a[1]) * Math.sin(angle) + a[0];
+				b[1] = (d0 - a[0]) * Math.sin(angle) + (d1 - a[1]) * Math.cos(angle) + a[1];
+				return b;
+			}
+			
+			function line(a, b, round, width) //rysuje odcinek o końach a i b
+			{       
+				canvas = document.getElementById("canvas");
+				if(!canvas.getContext)
+				{
+					return;
+				}
+				c = canvas.getContext("2d");
+				c.lineWidth = width;
+				if(round)
+				{
+					c.lineCap = "round";
+				}
+				else
+				{
+					c.lineCap = "butt";
+				}
+				c.beginPath();
+				c.moveTo(a[0], a[1]);
+				c.lineTo(b[0], b[1]);
+				c.stroke();
+			}
+			
+			function degreesToRadians(angle) //zamiana stopni na radiany
+			{  
+				return radians = (Math.PI / 180) * angle;
+			}
+			
+			function circle()
+			{       
+				canvas = document.getElementById("canvas");
+				if(!canvas.getContext)
+				{
+					return;
+				}
+				c = canvas.getContext("2d");
+				c.beginPath();
+				c.lineWidth = 2;
+				c.lineCap = "butt";
+				c.arc(x, y, r, 0,2 * Math.PI);
+				c.arc(x, y, r * 0.9, 0,2 * Math.PI);
+				c.stroke();
+			}
+			
+			function face() 
+			{
+				canvas = document.getElementById("canvas");
+				if(!canvas.getContext)
+				{
+					return;
+				}
+				c = canvas.getContext("2d");
+				c.beginPath();
+				c.arc(x, y, r / 15, 0,2 * Math.PI);
+				c.fillStyle = 'black';
+				c.fill();
+			}
+			
+			function lines()
+			{       
+				var p = [0, 0];
+				var q = [0, 0];
+				p[0] = s[0];
+				q[0] = s[0];
+				p[1] = s[1] - r;
+				q[1] = s[1] - r + 20;
+				for(i = 1; i < 13; i++)
+				{
+					p = rotate(30, s, p);
+					q = rotate(30, s, q);
+					line(p, q, 0, 3);
+				}
+				p = [0, 0];
+				q = [0, 0];
+				p[0] = s[0];
+				q[0] = s[0];
+				p[1] = s[1] - r;
+				q[1] = s[1] - r + 10;
+				for(i = 1; i < 60; i++)
+				{
+					p = rotate(6, s, p);
+					q = rotate(6, s, q);
+					line(p, q, 0, 2);
+				}
+			}
+			
+			function numbers() 
+			{
+				canvas = document.getElementById("canvas");
+				c = canvas.getContext("2d");
+				var ang;
+				var num;
+				c.font = r*0.15 + "px arial";
+				c.textBaseline="middle";
+				c.textAlign="center";
+				for(num= 1; num < 13; num++)
+				{
+					ang = num * Math.PI / 6;
+					c.rotate(ang);
+					c.translate(0, -r * 0.70);
+					c.rotate(-ang);
+					c.fillText(num.toString(), x, y);
+					c.rotate(ang);
+					c.translate(0, r * 0.70);
+					c.rotate(-ang);
+				}
+			}
+			
+			function time()
+			{
+				clearCanvas();
+				circle();
+				lines();
+				face();
+				numbers();
+				var now = new Date();
+				var hour = now.getHours();
+				var minute = now.getMinutes();
+				var second = now.getSeconds();
+				timeHand(second, r / 1.3, 6, 1);
+				timeHand(minute, r / 1.65, 6, 2);
+				hour = hour % 12;
+				timeHand(hour, r / 2.25, 30 + minute * Math.PI / 60, 3);
+			}
+			
+			function timeHand(hand, lenght, angle, width)
+			{
+				hand = (hand * angle);
+				var ws = [0, 0]
+				ws[0] = s[0];
+				ws[1] = s[1] - lenght;
+				var ws1 = [0, 0];
+				ws1[0] = s[0] - lenght / 6;
+				ws1[1] = s[1] - lenght / 2;
+				var ws2 = [0, 0];
+				ws2[0] = s[0] + lenght / 6;
+				ws2[1] = s[1] - lenght / 2;
+				ws = rotate(hand, s, ws);
+				ws1 = rotate(hand, s, ws1);
+				ws2 = rotate(hand, s, ws2);
+				line(ws1, ws, 1, width);
+				line(ws2, ws, 1, width);
+				line(s, ws1, 1, width);
+				line(s, ws2, 1, width);
+			}
+			
+			function startClock()
+			{
+				play = setInterval('time()',100);
+			}
+			
+			function stopClock() 
+			{
+				clearInterval(play);
+			} 
+		</script>
+	</head>
+	<body onkeyup="keyDownHandler(event)">
+			<canvas id="canvas" width='600' height='400'>
+				<p>Sorry: Browser does not support Graphics Canvas</p>
+			</canvas>
+			<br/>
+			<button onclick="circle();">Kolo</button> 
+			<button onclick="lines();">Linie</button> 
+			<button onclick="face();">Twarz</button> 
+			<button onclick="numbers();">Liczby</button> 
+			<button onclick="time();">Czas</button> 
+			<button onclick="startClock();">Start</button>
+			<button onclick="stopClock();">Stop</button> 
+			<button onclick="clearInt();">Wyczysc</button>
+	</body>
+</html>
